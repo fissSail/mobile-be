@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mobile.reserveExamine.mapper.BaseExamineRecordProjectMapper">
+    <insert id="insertProjectList" parameterType="list">
+        insert into base_examine_record_project (
+        id,department_id,examine_record_id,examine_package_id,combi_project_id,
+        combi_project_name,project_id,project_name,project_unit,inspect_by,
+        create_by,create_time,update_by,
+        update_time,del_flag
+        ) values
+        <foreach collection="projectList" item="item" separator=",">
+            (#{item.id},#{item.departmentId},#{item.examineRecordId},#{item.examinePackageId}
+            ,#{item.combiProjectId},#{item.combiProjectName},#{item.projectId},
+            #{item.projectName},#{item.projectUnit},#{item.inspectBy}
+            ,#{item.createBy},#{item.createTime}
+            ,#{item.updateBy},#{item.updateTime},#{item.delFlag})
+        </foreach>
+
+    </insert>
+</mapper>

@@ -1,0 +1,94 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mobile.medicalPackage.mapper.MedicalPackageMapper">
+    <select id="findByList" resultType="com.ruoyi.mobile.medicalPackage.vo.BaseSetMealVO">
+        SELECT bsm.id,
+               bsm.title,
+               bep.name as examinePackageName,
+               bsm.base_examine_package_id,
+               bsm.sale_number,
+               bsm.content,
+               bep.amount_receivable,
+               bsm.image
+        FROM base_set_meal bsm
+                 LEFT JOIN base_examine_package bep ON bsm.base_examine_package_id = bep.id
+                 left join base_examine_type bet on bep.examine_type_id = bet.id
+                 left join base_set_meal_tag bsmt on bsm.id = bsmt.base_set_meal_id
+                 left join base_tag bt on bsmt.tag_id = bt.id
+            ${ew.customSqlSegment}
+    </select>
+    <resultMap id="packageDetails" type="com.ruoyi.mobile.medicalPackage.vo.PackageDetailsVO">
+        <result column="title" property="title"/>
+        <result column="base_examine_package_id" property="baseExaminePackageId"/>
+        <result column="examinePackageName" property="examinePackageName"/>
+        <result column="sale_number" property="saleNumber"/>
+        <result column="content" property="content"/>
+        <result column="amount_receivable" property="amountReceivable"/>
+        <result column="sale_number" property="saleNumber"/>
+        <result column="image" property="image"/>
+        <result column="examineType" property="examineType"/>
+        <result column="sex" property="sex"/>
+        <result column="matter" property="matter"/>
+        <result column="comboName" property="comboName"/>
+        <collection column="id" property="baseTagVOList"
+                    select="com.ruoyi.moblie.medicalPackage.mapper.BaseSetMealMapper.findBySetMealIdBaseTagList"/>
+    </resultMap>
+    <select id="packageDetails" resultMap="packageDetails">
+        SELECT bsm.id,
+               bsm.title,
+               bsm.base_examine_package_id,
+               bep.name as examinePackageName,
+               bsm.sale_number,
+               bsm.content,
+               bep.amount_receivable,
+               bsm.banner as image,
+               bet.name as examineType,
+               bep.sex,
+               bep.matter,
+               bep.name   as comboName
+        FROM base_set_meal bsm
+                 LEFT JOIN base_examine_package bep ON bsm.base_examine_package_id = bep.id
+                 LEFT JOIN base_examine_type bet ON bep.examine_type_id = bet.id
+        where bsm.id = #{id}
+    </select>
+    <select id="selectPackageRecommendation" resultType="com.ruoyi.mobile.medicalPackage.vo.BaseSetMealVO">
+        SELECT bsm.id,
+               bsm.title,
+               bsm.base_examine_package_id,
+               bep.name as examinePackageName,
+               bsm.sale_number,
+               bsm.content,
+               bep.amount_receivable,
+               bsm.image
+        FROM base_set_meal bsm
+                 LEFT JOIN base_examine_package bep ON bsm.base_examine_package_id = bep.id
+                 left join base_examine_type bet on bep.examine_type_id = bet.id
+            ${ew.customSqlSegment}
+    </select>
+    <select id="selectSetMealSaleNumber" resultType="com.ruoyi.mobile.medicalPackage.vo.BaseSetMealVO">
+        SELECT bsm.id,
+               bsm.title,
+               bsm.base_examine_package_id,
+               bsm.sale_number,
+               bsm.content,
+               bep.amount_receivable,
+               bsm.image
+        FROM base_set_meal bsm
+                 LEFT JOIN base_examine_package bep ON bsm.base_examine_package_id = bep.id
+                 left join base_examine_type bet on bep.examine_type_id = bet.id
+        ORDER BY bsm.sale_number desc
+    </select>
+    <select id="findBaseSetMealId" resultType="java.lang.String">
+        SELECT bsm.id
+        FROM base_set_meal_tag bsmt
+        LEFT JOIN base_tag bt on bsmt.tag_id = bt.id
+        left join base_set_meal bsm on bsm.id = bsmt.base_set_meal_id
+        where bt.id in
+        <foreach collection="tagIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and bsm.del_flag='0'
+        GROUP BY bsmt.base_set_meal_id
+    </select>
+</mapper>

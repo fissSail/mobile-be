@@ -1,0 +1,98 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mobile.reserveExamine.mapper.BaseExamineRecordMapper">
+
+    <select id="findByList" resultType="com.ruoyi.mobile.reserveExamine.vo.ExamineRecordVO">
+        SELECT bercp.combi_project_name,
+               bercp.examine_package_name,
+               ber.id                   as examineRecordId,
+               ber.examine_date,
+               ber.is_urgent            as isExpedited,
+               ber.is_recheck           as isRecheck,
+               bercp.examine_package_id as baseExaminePackageId,
+               bet.name                 as examineType
+        FROM base_examine_record ber
+                 LEFT JOIN base_examine_record_combi_project bercp ON bercp.examine_record_id = ber.id
+                 left join base_examine_type bet on ber.examine_type_id = bet.id
+            ${ew.customSqlSegment}
+    </select>
+    <select id="packageDetails" resultType="com.ruoyi.mobile.reserveExamine.vo.ExamineRecordVO">
+        SELECT bercp.combi_project_name,
+               bercp.examine_package_name,
+               bercp.create_time,
+               sd.dept_name,
+               bercp.combi_project_id as combiProjectId
+        FROM base_examine_record_combi_project bercp
+                 left join sys_dept sd on bercp.department_id = sd.dept_id
+        WHERE bercp.examine_record_id = #{examineRecordId}
+          AND bercp.del_flag = '0'
+    </select>
+    <resultMap id="packageDetails" type="com.ruoyi.mobile.reserveExamine.vo.ExamineRecordVO">
+        <id column="examine_package_name" property="examinePackageName"/>
+        <result column="combi_project_name" property="combiProjectName"/>
+        <result column="combi_project_id" property="combiProjectId"/>
+        <result column="dept_name" property="deptName"/>
+        <collection column="combiProjectId" property="examineProjectNameDetailsVOS"
+                    select="com.ruoyi.mobile.reserveExamine.mapper.BaseExamineRecordMapper.findbyCombiProjectIdsName"/>
+    </resultMap>
+    <select id="findbyCombiProjectIdsName" resultType="com.ruoyi.mobile.medicalPackage.vo.ExamineProjectNameDetailsVO">
+        SELECT b.combi_project_id,
+               c.project_name,
+               c.id           as projectId,
+               c.project_unit as projectUnit,
+               c.project_code,
+               c.is_print
+        FROM base_combi_project_detailed b
+                 LEFT JOIN base_examine_project c ON b.examine_project_id = c.id
+        WHERE b.combi_project_id = #{combiProjectIds}
+    </select>
+    <select id="selectExaminePackageIdByPersonRecordId" resultType="String">
+        SELECT bercp.examine_package_id
+        FROM base_examine_record ber
+                 LEFT JOIN base_examine_record_combi_project bercp ON bercp.examine_record_id = ber.id
+        WHERE ber.person_record_id = #{personRecordId}
+          AND ber.del_flag = 0
+          AND bercp.del_flag = 0
+          AND bercp.examine_package_id IS NOT NULL
+        GROUP BY bercp.examine_package_id
+    </select>
+    <select id="selectExamineFinishList" resultType="com.ruoyi.mobile.reserveExamine.vo.ExamineFinishListVO">
+        SELECT
+        ber.examine_code,
+        ber.id AS examine_record_id,
+        bpr.NAME AS person_record_name,
+        bet.NAME AS examine_type,
+        bercp.examine_package_name,
+        ber.end_time,
+        ber.post_type,
+        bet.code as examineTypeCode,
+        ber.is_end_examine
+        FROM
+        base_examine_record ber
+        LEFT JOIN base_person_record bpr ON ber.person_record_id = bpr.id
+        LEFT JOIN base_examine_type bet ON ber.examine_type_id = bet.id
+        LEFT JOIN base_examine_record_combi_project bercp ON bercp.examine_record_id = ber.id
+        ${ew.customSqlSegment}
+    </select>
+    <select id="selectPersonInfo" resultType="com.ruoyi.mobile.userInfo.vo.PersonInfoVo">
+        select ber.examine_code,
+               bpr.name,
+               ber.person_type,
+               ber.enterprise,
+               ber.examine_date
+        from base_examine_record ber
+                 left join base_person_record bpr on ber.person_record_id = bpr.id
+        where ber.id = #{examineRecordId}
+    </select>
+    <select id="selectBaseExamineRecordSimpleById"
+            resultType="com.ruoyi.mobile.reserveExamine.dto.BaseExamineRecordSimpleDTO">
+        select ber.examine_code, ber.person_type, ber.enterprise, ber.examine_date, bpr.name, bet.name as examine_type
+        from base_examine_record ber
+                 left join base_person_record bpr on bpr.id = ber.person_record_id
+                 left join base_examine_type bet on ber.examine_type_id = bet.id
+        where ber.id = #{examineRecordId}
+          and ber.del_flag = '0'
+          and bpr.del_flag = '0'
+    </select>
+</mapper>

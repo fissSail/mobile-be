@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mobile.medicalPackage.mapper.BaseExaminePackageMapper">
+
+    <select id="findByCombiProject" resultMap="findByCombiProject">
+        SELECT
+            b.*
+        FROM
+            base_examine_package_detailed a
+                LEFT JOIN base_combi_project b on a.combi_project_id=b.id
+        where a.examine_package_id=#{baseExaminePackageId}
+          and b.del_flag='0'
+    </select>
+
+    <resultMap id="findByCombiProject" type="com.ruoyi.mobile.medicalPackage.vo.BaseCombiProjectVO">
+        <result property="id"    column="id"    />
+        <result property="departmentId"    column="department_id"    />
+        <result property="projectType"    column="project_type"    />
+        <result property="projectName"    column="project_name"    />
+        <result property="projectCode"    column="project_code"    />
+        <result property="isCharge"    column="is_charge"    />
+        <result property="chargeType"    column="charge_type"    />
+        <result property="inputCode"    column="input_code"    />
+        <result property="discount"    column="discount"    />
+        <result property="price"    column="price"    />
+        <result property="costPrice"    column="cost_price"    />
+        <result property="sampleType"    column="sample_type"    />
+        <result property="position"    column="position"    />
+        <result property="tubeType"    column="tube_type"    />
+        <result property="number"    column="number"    />
+        <result property="upperAge"    column="upper_age"    />
+        <result property="lowerAge"    column="lower_age"    />
+        <result property="projectMark"    column="project_mark"    />
+        <result property="isDelivery"    column="is_delivery"    />
+        <result property="isApply"    column="is_apply"    />
+        <result property="sex"    column="sex"    />
+        <result property="isWomanExamine"    column="is_woman_examine"    />
+        <result property="isBeforeMeal"    column="is_before_meal"    />
+        <result property="isDrawBlood"    column="is_draw_blood"    />
+        <result property="hospitalCode"    column="hospital_code"    />
+        <result property="criticalRemark"    column="critical_remark"    />
+        <result property="matter"    column="matter"    />
+        <result property="remark"    column="remark"    />
+        <result property="sort"    column="sort"    />
+        <result property="residentId"    column="resident_id"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+        <collection  column="id" property="examineProjectNameDetailsVOS"
+                     select="com.ruoyi.mobile.reserveExamine.mapper.BaseExamineRecordMapper.findbyCombiProjectIdsName"/>
+    </resultMap>
+
+</mapper>

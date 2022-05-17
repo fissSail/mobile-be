@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mobile.medicalPackage.mapper.BaseExamineRecordCombiProjectMapper">
+    <select id="portfolioProjectInfo" resultType="com.ruoyi.mobile.reserveExamine.vo.PortfolioProjectInfoVO">
+        SELECT
+        count(*) AS number,
+        a.combi_project_id AS combiProjectId,
+        b.number AS projectNumber,
+        IF
+        ( count(*) &lt; b.number, 0, 1 ) AS isExceed
+        FROM
+        base_examine_record ber
+        LEFT JOIN base_examine_record_combi_project a ON ber.id = a.examine_record_id
+        LEFT JOIN base_combi_project b ON a.combi_project_id = b.id
+        WHERE
+        DATE_FORMAT( ber.examine_date, '%Y-%m-%d' )= DATE_FORMAT( #{examineDate},   '%Y-%m-%d' )
+        AND a.examine_package_id = #{baseExaminePackageId}
+        AND a.is_abandon = '0'
+        GROUP BY
+        a.combi_project_id
+    </select>
+    <insert id="insertCombiProjectList" parameterType="list">
+        insert into base_examine_record_combi_project(
+        id,examine_record_id,department_id,examine_package_id,examine_package_name,combi_project_id,
+        combi_project_name,discount,price,amount_paid,create_by,create_time,del_flag)values
+        <foreach collection="combiProjectList" item="item" separator=",">
+            (#{item.id},#{item.examineRecordId},#{item.departmentId},#{item.examinePackageId},#{item.examinePackageName}
+            ,#{item.combiProjectId},#{item.combiProjectName},#{item.discount},#{item.price},#{item.amountPaid}
+            ,#{item.createBy},#{item.createTime},#{item.delFlag})
+        </foreach>
+    </insert>
+</mapper>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.moblie.medicalPackage.mapper.BaseSetMealMapper">
+
+    <resultMap id="findByList" type="com.ruoyi.moblie.medicalPackage.domain.vo.BaseSetMealVO">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="baseExaminePackageName" property="baseExaminePackageName"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="image" property="image"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="sale_number" property="saleNumber"/>
+        <result column="banner" property="banner"/>
+        <result column="content" property="content"/>
+        <result column="del_flag" property="delFlag"/>
+        <collection  column="id" property="baseTagVOList"
+                     select="com.ruoyi.moblie.medicalPackage.mapper.BaseSetMealMapper.findBySetMealIdBaseTagList"/>
+    </resultMap>
+    <select id="findByList" resultMap="findByList">
+        SELECT bsm.id,
+               bsm.title,
+               bep.name as baseExaminePackageName,
+               bsm.base_examine_package_id,
+               bsm.created_time,
+               bsm.update_time,
+               bsm.image,
+               bsm.sale_number,
+               bsm.banner,
+               bsm.content,
+               bsm.del_flag
+        FROM base_set_meal bsm
+                 LEFT JOIN base_examine_package bep ON bep.id =bsm.base_examine_package_id
+            ${ew.customSqlSegment}
+    </select>
+    <select id="findBySetMealIdBaseTagList" resultType="com.ruoyi.common.mobile.entity.BaseTagDO">
+        SELECT
+            bt.*
+        FROM
+            base_set_meal_tag bsmt
+                LEFT JOIN base_tag bt ON bsmt.tag_id = bt.id
+        where bsmt.base_set_meal_id=#{setMealId}
+    </select>
+</mapper>

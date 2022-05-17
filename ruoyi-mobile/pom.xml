@@ -70,12 +70,6 @@
             <version>6.18.1</version>
         </dependency>
 
-        <!--        分布式文件存储-->
-        <dependency>
-            <groupId>microsun.minio</groupId>
-            <artifactId>microsun-minio-springboot-starter</artifactId>
-            <version>1.3.2-RELEASE</version>
-        </dependency>
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
